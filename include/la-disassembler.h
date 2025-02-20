@@ -1,6 +1,7 @@
 #ifndef __LADISASSEMBLER_DISASSEMBLER_H__
 #define __LADISASSEMBLER_DISASSEMBLER_H__
 
+#include <ios>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -166,7 +167,7 @@ private:
     }
 
     #define __BITS(hi, lo) ((inst >> (lo)) & ((1 << ((hi) - (lo) + 1)) - 1))
-    #define __SEXT(bits, from) ((int64_t)(((int64_t)bits) << (64 - (from))) >> (64 - (from)))
+    #define __SEXT(bits, from) ((int64_t)(((int64_t)(bits)) << (64 - (from))) >> (64 - (from)))
     #define __SIMM(hi, lo) __SEXT(__BITS(hi, lo), (hi) - (lo) + 1)
 
     void disasm_3R(uint32_t inst, const void *args, DecodeTokenArray &tokens) const {
@@ -261,7 +262,7 @@ private:
         tokens.tokens[0].type = NAME;
         tokens.tokens[0].str = instAlias ? "call" : "bl";
         tokens.tokens[1].type = PCOFF;
-        tokens.tokens[1].num = __SEXT(__BITS(9, 0) << 16 | __BITS(24, 10), 26);
+        tokens.tokens[1].num = __SEXT(((__BITS(9, 0) << 15) | __BITS(25, 10)) << 2, 24);
     }
 
     void disasm_load(uint32_t inst, const void *name, DecodeTokenArray &tokens) const {

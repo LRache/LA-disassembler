@@ -1,7 +1,6 @@
 #ifndef __LADISASSEMBLER_DISASSEMBLER_H__
 #define __LADISASSEMBLER_DISASSEMBLER_H__
 
-#include <ios>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -287,9 +286,9 @@ private:
         tokens.tokens[3].num = __SIMM(21, 10);
     }
 
-    void disasm_break(uint32_t inst, const void *, DecodeTokenArray &tokens) const {
+    void disasm_15I(uint32_t inst, const void *name, DecodeTokenArray &tokens) const {
         tokens.tokens[0].type = NAME;
-        tokens.tokens[0].str = "break";
+        tokens.tokens[0].str = (const char *)name;
         tokens.tokens[1].type = UIMM32;
         tokens.tokens[1].num = __BITS(14, 0);
     }
@@ -366,7 +365,8 @@ public:
         __INSTPAT_NAME("00101 00101 ???????????? ????? ?????", disasm_store, st.h );
         __INSTPAT_NAME("00101 00110 ???????????? ????? ?????", disasm_store, st.w );
 
-        __INSTPAT_NAME("00000000001010100 ???????????????", disasm_break, break);
+        __INSTPAT_NAME("00000000001010100 ???????????????", disasm_15I, break  );
+        __INSTPAT_NAME("00000000001010110 ???????????????", disasm_15I, syscall);
 
         #undef __INSTPAT_NONE
         #undef __INSTPAT_NAME
@@ -382,6 +382,10 @@ public:
 
     void set_reg_prefix(bool prefix) {
         regPrefix = prefix;
+    }
+
+    void set_mode32(bool mode) {
+        mode32 = mode;
     }
 
     std::string fmt_gpr(unsigned int index) const {
